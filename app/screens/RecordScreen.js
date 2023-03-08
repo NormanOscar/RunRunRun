@@ -1,17 +1,11 @@
 import { useState} from 'react';
-import { Text, View, Pressable, Dimensions } from 'react-native';
+import { Text, View, Pressable, Dimensions, Permission } from 'react-native';
 import MapView from 'react-native-maps';
 import { styles } from '../style/styles.js';
 
 
 export default function RecordScreen({ navigation }) {
 
-  const getCurrentLocation = () => {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(position => resolve(position), e => reject(e));
-    });
-  };
-  
   const [show_Hide, setShowHide] = useState('flex');
 
   const letToggle = () => {
@@ -31,13 +25,32 @@ export default function RecordScreen({ navigation }) {
     }
   }
 
-  const [count, setCount] = useState(0);
+  const [StoppedShowHide, setAlertShowHide] = useState('none');
+
+  const toggleStoppedAlert = () => {
+    if(StoppedShowHide === 'flex') {
+      setAlertShowHide('none');
+    } else {
+      setAlertShowHide('flex');
+    }
+  }
+
+  const [BtnShowHide, setBtnShowHide] = useState('flex');
+
+  const toggleStoppedBtn = () => {
+    if(BtnShowHide === 'flex') {
+      setBtnShowHide('none');
+    } else {
+      setBtnShowHide('flex');
+    }
+  }
+
+  const [time, setCount] = useState(0);
   const [intervalId, setIntervalId] = useState(0);
 
   const startCountHandler = () => {
-    setCount(0);
     let newIntervalId = setInterval(() => {
-      setCount((count) => count + 1);
+      setCount((time) => time + 1);
     }, 1000);
     setIntervalId(newIntervalId);
   }
@@ -46,7 +59,6 @@ export default function RecordScreen({ navigation }) {
     clearInterval(intervalId);
   }
 
-
   return (
     <View style={styles.container}>
       <View style={{
@@ -54,7 +66,7 @@ export default function RecordScreen({ navigation }) {
         display: show_Hide
         }}>
         <View style={styles.backBtn}>
-          <Pressable onPress={() => navigation.navigate('Home')}>
+          <Pressable onPress={() => navigation.goBack()}>
             <Text style={{fontSize:24, paddingLeft:20, color: 'rgb(59, 154, 226)'}}>Back</Text>
           </Pressable>
         </View>
@@ -76,7 +88,7 @@ export default function RecordScreen({ navigation }) {
             showsMyLocationButton={true}
             showsCompass={true}
             zoomEnabled={true}
-
+            toolbarEnabled={true}
           />
         </View>
         <View style={styles.startBtnContainer}>
@@ -100,9 +112,21 @@ export default function RecordScreen({ navigation }) {
           justifyContent: 'center',
           alignItems: 'center'
         }}>
+          <View style={{
+            backgroundColor: 'rgb(59, 154, 226)',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: StoppedShowHide
+          }}>
+            <Text style={{
+              fontSize: 20,
+              paddingVertical: 10
+            }}>Stopped</Text>
+          </View>
           <View style={styles.recordFields}>
             <Text style={styles.recordHeaders}>TIME</Text>
-            <Text style={styles.recordDigits}>{count}</Text>
+            <Text style={styles.recordDigits}>{time}</Text>
           </View>
           <View style={styles.recordFields}>
             <Text style={styles.recordHeaders}>Distance (KM)</Text>
@@ -113,13 +137,40 @@ export default function RecordScreen({ navigation }) {
             <Text style={styles.recordDigits}>0.00</Text>
           </View>
           <View style={styles.finishBtnContainer}>
-            <Pressable style={styles.finishBtn} onPress={()=> {
+            <Pressable 
+            style={[
+              styles.finishBtn, 
+              {
+                backgroundColor: '#FF5F5F',
+                display:BtnShowHide
+              }
+            ]} 
+            onPress={()=> {
               stopCounterHandler();
-              letToggle();
-              letToggleRecord();
+              toggleStoppedAlert();
+              toggleStoppedBtn();
             }}>
               <Text style={styles.finishBtnText}>Finish</Text>
             </Pressable>
+            <View style={[
+              styles.stoppedBtnContainer, 
+              {
+                flex: 0.6,
+                flexDirection: 'row',
+                display: StoppedShowHide
+              }
+              ]}>
+              <Pressable style={[styles.stoppedBtns, styles.stoppedResumeBtn]} onPress={() => {
+                startCountHandler();
+                toggleStoppedAlert();
+                toggleStoppedBtn();
+              }}>
+                <Text style={styles.stoppedBtnsText}>Resume</Text>
+              </Pressable>
+              <Pressable style={[styles.stoppedBtns, styles.stoppedFinishBtn]} onPress={() => navigation.navigate('Save', {runData: {time, distance: '3.56'}})}>
+                <Text style={styles.stoppedBtnsText}>Finish</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </View>
