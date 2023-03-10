@@ -5,7 +5,30 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function HomeScreen({ navigation }) {
-  const [data, setData] = useState();
+  //AsyncStorage.clear();
+
+  let savedData = null;
+
+  const getData = async () => {
+    try {
+      const storageData = await AsyncStorage.getItem("savedData");
+      savedData = JSON.parse(storageData);
+
+      displayRuns();
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  getData();
+
+  const displayRuns = () => {
+    for (const run of savedData) {
+      console.log(run);
+    }
+  }
+
+  /* const [data, setData] = useState();
 
   useEffect( async () => {
       try {
@@ -16,29 +39,29 @@ export default function HomeScreen({ navigation }) {
       } catch (error) {
         console.log(error);
       }
-  }, []);
-  
+  }, []); */
+
   return (
     <View style={styles.container}>
 
-      <View style={{
-        backgroundColor: 'rgb(59, 154, 226)',
-        paddingTop: 50
-      }}>
-        <Text style={styles.title}>RunRunRun</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>RunRunRun</Text>
       </View>
 
       <View style={{
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 0.9
+        flex: 0.9,
       }}>
 
-        <Text style={styles.text}>Home</Text>
+        <Text style={styles.titleText}>Home</Text>
       </View>
-      <View style={styles.newRecordingBtnContainer}>
-        <Pressable style={styles.newRecordingBtn} onPress={() => navigation.navigate('Record')}>
-          <Text style={styles.newRecordingBtnText}>+</Text>
+      <View style={[
+        styles.btnContainer,
+        { zIndex: 50 }
+      ]}>
+        <Pressable style={styles.btn} onPress={() => navigation.navigate('Record')}>
+          <Text style={styles.btnText}>New</Text>
         </Pressable>
       </View>
     </View>

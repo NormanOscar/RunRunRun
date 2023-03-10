@@ -1,15 +1,17 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import { Text, View, Pressable, Dimensions, Permission } from 'react-native';
 import MapView from 'react-native-maps';
 import { styles } from '../style/styles.js';
-
+import useTimer from 'easytimer-react-hook';
 
 export default function RecordScreen({ navigation }) {
+
+  const [timer, isTargetAchieved] = useTimer();
 
   const [show_Hide, setShowHide] = useState('flex');
 
   const letToggle = () => {
-    if(show_Hide === 'flex') {
+    if (show_Hide === 'flex') {
       setShowHide('none');
     } else {
       setShowHide('flex');
@@ -18,7 +20,7 @@ export default function RecordScreen({ navigation }) {
   const [record_Show_Hide, setRecordShowHide] = useState('none');
 
   const letToggleRecord = () => {
-    if(record_Show_Hide === 'flex') {
+    if (record_Show_Hide === 'flex') {
       setRecordShowHide('none');
     } else {
       setRecordShowHide('flex');
@@ -28,7 +30,7 @@ export default function RecordScreen({ navigation }) {
   const [StoppedShowHide, setAlertShowHide] = useState('none');
 
   const toggleStoppedAlert = () => {
-    if(StoppedShowHide === 'flex') {
+    if (StoppedShowHide === 'flex') {
       setAlertShowHide('none');
     } else {
       setAlertShowHide('flex');
@@ -38,44 +40,37 @@ export default function RecordScreen({ navigation }) {
   const [BtnShowHide, setBtnShowHide] = useState('flex');
 
   const toggleStoppedBtn = () => {
-    if(BtnShowHide === 'flex') {
+    if (BtnShowHide === 'flex') {
       setBtnShowHide('none');
     } else {
       setBtnShowHide('flex');
     }
   }
 
-  const [time, setCount] = useState(0);
-  const [intervalId, setIntervalId] = useState(0);
-
-  const startCountHandler = () => {
-    let newIntervalId = setInterval(() => {
-      setCount((time) => time + 1);
-    }, 1000);
-    setIntervalId(newIntervalId);
+  /* const handleUserLoction = () => {
+    navigator.geolocation.getCurrentPosition(pos => {
+      alert(JSON.stringify(pos));
+    })
   }
 
-  const stopCounterHandler = () => {
-    clearInterval(intervalId);
-  }
-
+  handleUserLoction(); */
   return (
     <View style={styles.container}>
       <View style={{
         flex: 1,
         display: show_Hide
-        }}>
-        <View style={styles.backBtn}>
+      }}>
+        <View style={styles.backBtnContainer}>
           <Pressable onPress={() => navigation.goBack()}>
-            <Text style={{fontSize:24, paddingLeft:20, color: 'rgb(59, 154, 226)'}}>Back</Text>
+            <Text style={styles.backBtnText}>Back</Text>
           </Pressable>
         </View>
         <View style={styles.map}>
-          <MapView 
+          <MapView
             style={{
               width: Dimensions.get('window').width,
               height: (Dimensions.get('window').height - 300)
-            }} 
+            }}
             initialRegion={{
               latitude: 56.8556858,
               longitude: 14.8290985,
@@ -84,49 +79,35 @@ export default function RecordScreen({ navigation }) {
             }}
             mapType={'standard'}
             showsUserLocation={true}
-            followsUserLocation={true}
             showsMyLocationButton={true}
             showsCompass={true}
             zoomEnabled={true}
             toolbarEnabled={true}
           />
         </View>
-        <View style={styles.startBtnContainer}>
-          <Pressable style={styles.startBtn} onPress={()=> {
-            startCountHandler();
+        <View style={[styles.btnContainer, { flex: 0.4 }]}>
+          <Pressable style={styles.btn} onPress={() => {
+            timer.start();
             letToggle();
             letToggleRecord();
-          }}>
-            <Text style={styles.startBtnText}>Start</Text>
+          }
+          }>
+            <Text style={styles.btnText}>Start</Text>
           </Pressable>
         </View>
       </View>
-      
+
       <View style={{
-        flex:1,
-        display:record_Show_Hide
+        flex: 1,
+        display: record_Show_Hide
       }}>
-        <View style={{
-          paddingTop: 50,
-          flex:0.9,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <View style={{
-            backgroundColor: 'rgb(59, 154, 226)',
-            width: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-            display: StoppedShowHide
-          }}>
-            <Text style={{
-              fontSize: 20,
-              paddingVertical: 10
-            }}>Stopped</Text>
+        <View style={styles.measureContainer}>
+          <View style={[styles.stoppedAlert, { display: StoppedShowHide }]}>
+            <Text style={styles.stoppedAlertText}>Stopped</Text>
           </View>
           <View style={styles.recordFields}>
             <Text style={styles.recordHeaders}>TIME</Text>
-            <Text style={styles.recordDigits}>{time}</Text>
+            <Text style={styles.recordDigits}>{timer.getTimeValues().toString()}</Text>
           </View>
           <View style={styles.recordFields}>
             <Text style={styles.recordHeaders}>Distance (KM)</Text>
@@ -136,39 +117,56 @@ export default function RecordScreen({ navigation }) {
             <Text style={styles.recordHeaders}>AVG PACE (KM)</Text>
             <Text style={styles.recordDigits}>0.00</Text>
           </View>
-          <View style={styles.finishBtnContainer}>
-            <Pressable 
-            style={[
-              styles.finishBtn, 
-              {
-                backgroundColor: '#FF5F5F',
-                display:BtnShowHide
-              }
-            ]} 
-            onPress={()=> {
-              stopCounterHandler();
-              toggleStoppedAlert();
-              toggleStoppedBtn();
-            }}>
-              <Text style={styles.finishBtnText}>Finish</Text>
-            </Pressable>
-            <View style={[
-              styles.stoppedBtnContainer, 
-              {
-                flex: 0.6,
-                flexDirection: 'row',
-                display: StoppedShowHide
-              }
-              ]}>
-              <Pressable style={[styles.stoppedBtns, styles.stoppedResumeBtn]} onPress={() => {
-                startCountHandler();
+          <View style={[styles.btnContainer, { flex: 0.5 }]}>
+            <Pressable
+              style={[
+                styles.btn, styles.FinishBtn,
+                {
+                  backgroundColor: '#FF5F5F',
+                  display: BtnShowHide
+                }
+              ]}
+              onPress={() => {
+                timer.pause();
                 toggleStoppedAlert();
                 toggleStoppedBtn();
               }}>
-                <Text style={styles.stoppedBtnsText}>Resume</Text>
+              <Text style={styles.btnText}>Stop</Text>
+            </Pressable>
+            <View style={[
+              styles.btnContainer,
+              {
+                paddingTop: 10,
+                flexDirection: 'row',
+                display: StoppedShowHide
+              }
+            ]}>
+              <Pressable style={[
+                styles.btn,
+                {
+                  backgroundColor: '#44fc00',
+                  marginHorizontal: 10,
+                  width: 180
+                }
+              ]}
+                onPress={() => {
+                  timer.start();
+                  toggleStoppedAlert();
+                  toggleStoppedBtn();
+                }}>
+                <Text style={styles.btnText}>Resume</Text>
               </Pressable>
-              <Pressable style={[styles.stoppedBtns, styles.stoppedFinishBtn]} onPress={() => navigation.navigate('Save', {runData: {time, distance: '3.56'}})}>
-                <Text style={styles.stoppedBtnsText}>Finish</Text>
+              <Pressable
+                style={[
+                  styles.btn,
+                  {
+                    backgroundColor: '#FF5F5F',
+                    marginHorizontal: 10,
+                    width: 180
+                  }
+                ]}
+                onPress={() => navigation.navigate('Save', { runData: { time: timer.getTimeValues().toString(), distance: '3.56', avgPace: '5.50' } })}>
+                <Text style={styles.btnText}>Finish</Text>
               </Pressable>
             </View>
           </View>
