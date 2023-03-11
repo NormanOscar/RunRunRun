@@ -15,7 +15,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.RunRunRun.RunRunRun",
+      "config": {
+        "googleMapsApiKey": "AIzaSyCv1YhMBLcDKYGVgLYa6Pix13s9MFmlXpQ"
+      }
     },
     "android": {
       "adaptiveIcon": {

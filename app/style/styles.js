@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#eaeaea'
   },
   measureContainer: {
     paddingTop: 50,
@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     backgroundColor: 'rgb(59, 154, 226)',
-    paddingTop: 50
+    paddingTop: 30
   },
   titleText: {
     fontSize: 40,
@@ -128,6 +128,63 @@ const styles = StyleSheet.create({
   stoppedAlertText: {
     fontSize: 20,
     paddingVertical: 10
-  }
+  },
+  errorMsg: {
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingTop: 80
+  },
+  errorMsgText: {
+    fontSize: 25
+  },
+  scrollView: {
+    alignItems: 'center'
+  },
+  newBtnContainer: {
+    position: 'absolute', 
+    bottom: 50,
+    left: 0,
+    right: 0
+  },
+  runView: {
+    marginBottom: 15,
+    width: '100%',
+    backgroundColor: 'white'
+  },
+  runName: {
+    fontSize: 25, 
+    paddingHorizontal: 10, 
+    paddingVertical: 5, 
+    fontWeight: '400'
+  },
+  runDateTime: {
+    flexDirection: 'row',
+    paddingHorizontal: 10
+  },
+  runDateTimeText: {
+    paddingHorizontal:5
+  },
+  runDataContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingVertical: 10
+  },
+  runDataTitle: {
+    fontSize: 15,
+    fontWeight: '100',
+    textAlign: 'left',
+    paddingLeft: 10
+  },
+  runData: {
+    width: 130,
+    textAlign: 'center',
+    fontSize: 20
+  },
+  verticleLine:{
+    height: '90%',
+    width: 1,
+    backgroundColor: '#909090',
+  },
 });
 export { styles }

@@ -12,7 +12,8 @@ export default function App() {
       <Navigator
         initialRouteName='Home'
         screenOptions={{
-          headerShown: false
+          headerShown: false,
+          gestureEnabled: false
         }}
       >
         <Screen name='Home' component={HomeScreen}></Screen>

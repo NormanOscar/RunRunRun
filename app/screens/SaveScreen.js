@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View, Pressable, TextInput, Modal } from 'react-native';
 import { styles } from '../style/styles.js';
 import { useRoute } from "@react-navigation/native";
@@ -8,36 +8,47 @@ export default function SaveScreen({ navigation }) {
 
   const [modalVisible, setModalVisible] = React.useState(false);
 
-  let allRunData = new Array();
-
   const [runName, setName] = React.useState('');
   const [runDesc, setDesc] = React.useState('');
 
   const route = useRoute();
   const runData = route.params?.runData;
-
+  
+  useEffect(() => {
+    const startHour = runData.startTime.split(':')[0];
+    console.log(startHour);
+    if (startHour >= 0 && startHour < 6) {
+      setName('Morning run');
+    }
+    if (startHour >= 6 && startHour < 11) {
+      setName('Morning run');
+    }
+    if (startHour >= 11 && startHour < 13) {
+      setName('Lunch run');
+    }
+    if (startHour >= 13 && startHour < 18) {
+      setName('Afternoon run');
+    }
+    if (startHour >= 18 && startHour < 24) {
+      setName('Evening run');
+    }
+  })
   const saveData = async () => {
+    let savedData = [];
     runData.name = runName;
     runData.desc = runDesc;
     try {
-      let savedData = await AsyncStorage.getItem('savedData');
-      if (saveData != null) {
-        allRunData = JSON.parse(savedData);
-        allRunData.push(runData);
-      }
-      else {
-        allRunData.push(runData);
-      }
+      savedData = JSON.parse(await AsyncStorage.getItem('savedData')) || [];
+      savedData.push(runData);
+      console.log(savedData);
     } catch (error) {
       // Error retrieving data
     }
     try {
-      console.log(runData);
-      await AsyncStorage.setItem('savedData', JSON.stringify(allRunData));
+      await AsyncStorage.setItem('savedData', JSON.stringify(savedData));
     } catch (error) {
       // Error saving data
     }
-
   }
 
   return (
