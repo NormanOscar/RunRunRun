@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import { Text, View, Pressable, Dimensions } from 'react-native';
+import { Text, View, Pressable, Dimensions, Button } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { styles } from '../style/styles.js';
 import { useRoute } from "@react-navigation/native";
 import useTimer from 'easytimer-react-hook';
 import { format } from 'date-fns';
+import * as Location from 'expo-location';
+import haversine from 'haversine';
 
 export default function RecordScreen({ navigation }) {
 
-  const location = useRoute().params?.location;
+  const initialLocation = useRoute().params?.location;
 
   const [mapRegion, setmapRegion] = useState({
-    latitude: location.coords.latitude,
-    longitude: location.coords.longitude,
+    latitude: initialLocation.coords.latitude,
+    longitude: initialLocation.coords.longitude,
     latitudeDelta: 0.008,
     longitudeDelta: 0.008
   });
@@ -30,8 +32,62 @@ export default function RecordScreen({ navigation }) {
     setStartDate(format(date, "dd MMMM yyyy"));
     setStartTime(format(date, "HH:mm"));
   }
+
+  const [runListener, setRunListener] = useState();
+  const position = {
+    latitude: initialLocation.coords.latitude,
+    longitude: initialLocation.coords.longitude
+  };
+  const [totalDistance, setTotalDistance] = useState(0);
+
+  const enableWatchPosition = async () => {
+    const watchOptions = {
+      accuracy:Location.Accuracy.High,
+      timeInterval: 1000,
+      distanceInterval: 1
+    };
+    setRunListener(await Location.watchPositionAsync
+      (
+        watchOptions, 
+        onPositionChange
+      )
+    );
+  }
+
+  const onPositionChange = (locationCoords) => {
+    updateDistance(locationCoords.coords);
+    position.latitude = locationCoords.coords.latitude;
+    position.longitude = locationCoords.coords.longitude;
+  }
+
+  const updateDistance = (currentPosition) => {
+    const start = {
+      latitude: position.latitude,
+      longitude: position.longitude
+    }
+    const end = {
+      latitude: currentPosition.latitude,
+      longitude: currentPosition.longitude
+    }
+    let latestDistance = haversine(start, end, {unit: 'km'});
+    setTotalDistance(prev => prev + latestDistance);
+  }
+
+  const calculatePace = () => {
+    console.log(timer.getTotalTimeValues().seconds);
+    console.log(totalDistance);
+    if (totalDistance == 0) {
+      return '0:00';
+    }
+   const pace = (timer.getTotalTimeValues().seconds)/totalDistance;
+
+   return Math.floor(pace/60) + ':' + Math.round(pace%60).toString().padStart(2, '0');
+  }
+  const disableWatchPositon = () => {
+    runListener.remove();
+  }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: 'white'}]}>
       {timerState == 'stopped' && (
         <View style={{
           flex: 1,
@@ -60,6 +116,7 @@ export default function RecordScreen({ navigation }) {
           <View style={[styles.btnContainer, { flex: 0.4 }]}>
             <Pressable style={styles.btn} onPress={() => {
               timer.start();
+              enableWatchPosition();
               setDate();
             }
             }>
@@ -84,11 +141,11 @@ export default function RecordScreen({ navigation }) {
             </View>
             <View style={styles.recordFields}>
               <Text style={styles.recordHeaders}>Distance (KM)</Text>
-              <Text style={styles.recordDigits}>0.00</Text>
+              <Text style={styles.recordDigits}>{totalDistance.toFixed(2)}</Text>
             </View>
             <View style={styles.recordFields}>
               <Text style={styles.recordHeaders}>AVG PACE (KM)</Text>
-              <Text style={styles.recordDigits}>0:00</Text>
+              <Text style={styles.recordDigits}>{calculatePace()}</Text>
             </View>
             <View style={[styles.btnContainer, { flex: 0.5 }]}>
               {timerState == 'running' && (
@@ -100,6 +157,7 @@ export default function RecordScreen({ navigation }) {
                     }
                   ]}
                   onPress={() => {
+                    disableWatchPositon();
                     timer.pause();
                   }}>
                   <Text style={styles.btnText}>Stop</Text>
@@ -123,6 +181,7 @@ export default function RecordScreen({ navigation }) {
                   ]}
                     onPress={() => {
                       timer.start();
+                      enableWatchPosition();
                     }}>
                     <Text style={styles.btnText}>Resume</Text>
                   </Pressable>
@@ -135,7 +194,9 @@ export default function RecordScreen({ navigation }) {
                         width: 180
                       }
                     ]}
-                    onPress={() => navigation.navigate('Save', { runData: {date: startDate, startTime: startTime, duration: timer.getTimeValues().toString(), distance: '3.56', avgPace: '5:50' } })}>
+                    onPress={() => {
+                      navigation.navigate('Save', { runData: {date: startDate, startTime: startTime, duration: timer.getTimeValues().toString(), distance: totalDistance.toFixed(2), avgPace: '5:50' } });
+                    }}>
                     <Text style={styles.btnText}>Finish</Text>
                   </Pressable>
                 </View>

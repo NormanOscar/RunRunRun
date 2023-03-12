@@ -16,7 +16,6 @@ export default function SaveScreen({ navigation }) {
   
   useEffect(() => {
     const startHour = runData.startTime.split(':')[0];
-    console.log(startHour);
     if (startHour >= 0 && startHour < 6) {
       setName('Morning run');
     }
@@ -40,7 +39,6 @@ export default function SaveScreen({ navigation }) {
     try {
       savedData = JSON.parse(await AsyncStorage.getItem('savedData')) || [];
       savedData.push(runData);
-      console.log(savedData);
     } catch (error) {
       // Error retrieving data
     }
@@ -52,7 +50,7 @@ export default function SaveScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: 'white'}]}>
       <Modal
         animationType="slide"
         transparent={true}
