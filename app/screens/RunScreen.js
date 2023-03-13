@@ -13,16 +13,18 @@ export default function RunScreen({ navigation }) {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const map = useRef(null);
+  const _map = useRef();
   useEffect(() => {
-    map.current.fitToCoordinates(runData.positions, {
-      edgePadding: {
-        top: 80,
-        right: 80,
-        bottom: 80,
-        left: 80,
-      },
-    });
+    console.log(_map);
+      _map.current.fitToCoordinates(runData.positions, {
+        edgePadding: {
+          top: 80,
+          right: 80,
+          bottom: 80,
+          left: 80,
+        },
+        animated: true
+      });
   }, []);
 
   const deleteRun = async () => {
@@ -123,15 +125,15 @@ export default function RunScreen({ navigation }) {
             <View>
               <MapView
                 style={{
-                  width: Dimensions.get('window').width,
-                  height: (Dimensions.get('window').height - 500)
+                  width: 420,
+                  height: 450
                 }}
-                ref={map}
+                ref={_map}
                 provider={PROVIDER_GOOGLE}
                 mapType={'standard'}
                 showsCompass={true}
                 zoomEnabled={true}
-                toolbarEnabled={true}
+                showsBuildings={true}
               >
                 <Polyline
                   coordinates={runData.positions}
@@ -142,7 +144,7 @@ export default function RunScreen({ navigation }) {
                   coordinate={runData.positions[0]}
                   title='Start'
                   icon={require('../assets/startIcon.png')}
-                  />
+                />
                 <Marker 
                   coordinate={runData.positions[runData.positions.length - 1]}
                   title='End'

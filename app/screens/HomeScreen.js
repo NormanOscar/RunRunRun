@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation }) {
     })();
     (async () => {
       try {
-        setRunList(JSON.parse(await AsyncStorage.getItem("savedData")) || []);
+        setRunList(JSON.parse(await AsyncStorage.getItem("savedData")).reverse() || []);
       } catch (error) {
         errorMsg = 'Could not load runs';
       }

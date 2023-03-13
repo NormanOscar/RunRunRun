@@ -135,7 +135,7 @@ export default function SaveScreen({ navigation }) {
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-evenly', width: '90%'}}>
           <Pressable 
-            style={[styles.feelingBtns, {backgroundColor: '#32cd32'}, { borderColor: runFeeling == 'happy' ? 'black' : 'white' }]}
+            style={[styles.feelingBtns, {backgroundColor: '#32cd32'}, { borderColor: runFeeling == 'good' ? 'black' : 'white' }]}
             onPress={()=> setRunFeeling('good')}
           >
             <Entypo name="emoji-happy" size={40} color="black" />

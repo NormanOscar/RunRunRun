@@ -215,7 +215,7 @@ export default function RecordScreen({ navigation }) {
                           positions: [
                             { latitude: 56.857449, longitude: 14.830862 },
                             { latitude: 56.857759, longitude: 14.830761 },
-                            { latitude: 56.857934,  longitude: 14.830604 },
+                            { latitude: 56.857934, longitude: 14.830604 },
                             { latitude: 56.858116, longitude: 14.830000 },
                             { latitude: 56.858302, longitude: 14.828987 },
                             { latitude: 56.858636, longitude: 14.827459 },
@@ -233,7 +233,8 @@ export default function RecordScreen({ navigation }) {
                             { latitude: 56.857618, longitude: 14.830327 },
                             { latitude: 56.857545, longitude: 14.830616 },
                             { latitude: 56.857528, longitude: 14.830654 },
-                          ]}});
+                          ]
+                        }});
                     }}>
                     <Text style={styles.btnText}>Finish</Text>
                   </Pressable>
