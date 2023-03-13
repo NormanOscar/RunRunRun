@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './app/screens/HomeScreen';
 import RecordScreen from './app/screens/RecordScreen';
 import SaveScreen from './app/screens/SaveScreen';
+import RunScreen from './app/screens/RunScreen';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ export default function App() {
         <Screen name='Home' component={HomeScreen}></Screen>
         <Screen name='Record' component={RecordScreen}></Screen>
         <Screen name='Save' component={SaveScreen}></Screen>
+        <Screen name='Run' component={RunScreen}></Screen>
       </Navigator>
     </NavigationContainer>
   );

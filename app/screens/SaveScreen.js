@@ -3,6 +3,7 @@ import { Text, View, Pressable, TextInput, Modal } from 'react-native';
 import { styles } from '../style/styles.js';
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Entypo } from '@expo/vector-icons';
 
 export default function SaveScreen({ navigation }) {
 
@@ -10,6 +11,7 @@ export default function SaveScreen({ navigation }) {
 
   const [runName, setName] = React.useState('');
   const [runDesc, setDesc] = React.useState('');
+  const [ runFeeling, setRunFeeling ] = React.useState('good');
 
   const route = useRoute();
   const runData = route.params?.runData;
@@ -17,7 +19,7 @@ export default function SaveScreen({ navigation }) {
   useEffect(() => {
     const startHour = runData.startTime.split(':')[0];
     if (startHour >= 0 && startHour < 6) {
-      setName('Morning run');
+      setName('Night run');
     }
     if (startHour >= 6 && startHour < 11) {
       setName('Morning run');
@@ -34,14 +36,18 @@ export default function SaveScreen({ navigation }) {
   })
   const saveData = async () => {
     let savedData = [];
+    let runIndex;
     runData.name = runName;
     runData.desc = runDesc;
+    runData.feeling = runFeeling;
     try {
       savedData = JSON.parse(await AsyncStorage.getItem('savedData')) || [];
+      runIndex = savedData.length;
       savedData.push(runData);
     } catch (error) {
       // Error retrieving data
     }
+    runData.runIndex = runIndex;
     try {
       await AsyncStorage.setItem('savedData', JSON.stringify(savedData));
     } catch (error) {
@@ -91,6 +97,26 @@ export default function SaveScreen({ navigation }) {
         flex: 0.9
       }}>
         <Text style={{ fontSize: 30, paddingBottom: 20 }}>Save</Text>
+        <View>
+          <View>
+            <View style={[styles.runDataContainer, {width:'100%', borderColor:'lightgrey', borderWidth: '1', marginBottom: 20}]}>
+              <View>
+                <Text style={styles.runDataTitle}>Time:</Text>
+                <Text style={styles.runData}>{runData.duration}</Text>
+              </View>
+              <View style={styles.verticleLine}></View>
+              <View>
+                <Text style={styles.runDataTitle}>Distance:</Text>
+                <Text style={styles.runData}>{runData.distance} km</Text>
+              </View>
+              <View style={styles.verticleLine}></View>
+              <View>
+                <Text style={styles.runDataTitle}>Pace:</Text>
+                <Text style={styles.runData}>{runData.avgPace} /km</Text>
+              </View>
+            </View>
+          </View>
+        </View>
         <TextInput
           style={[styles.input, { height: 40 }]}
           placeholder='Name'
@@ -104,6 +130,29 @@ export default function SaveScreen({ navigation }) {
           onChangeText={(text) => setDesc(text)}
           value={runDesc}
         />
+        <View style={{justifyContent:'left', width:'100%'}}>
+          <Text style={{fontSize:20, marginLeft: 25, marginBottom: 10}}>How did it feel?</Text>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', width: '90%'}}>
+          <Pressable 
+            style={[styles.feelingBtns, {backgroundColor: '#32cd32'}, { borderColor: runFeeling == 'happy' ? 'black' : 'white' }]}
+            onPress={()=> setRunFeeling('good')}
+          >
+            <Entypo name="emoji-happy" size={40} color="black" />
+          </Pressable>
+          <Pressable 
+            style={[styles.feelingBtns, {backgroundColor: '#ffff00'}, { borderColor: runFeeling == 'medium' ? 'black' : 'white' }]}
+            onPress={()=> setRunFeeling('medium')}
+          >
+          <Entypo name="emoji-neutral" size={40} color="black" />
+          </Pressable>
+          <Pressable 
+            style={[styles.feelingBtns, {backgroundColor: '#FF5F5F'}, { borderColor: runFeeling == 'bad' ? 'black' : 'white' }]}
+            onPress={()=> setRunFeeling('bad')}
+          >
+            <Entypo name="emoji-sad" size={40} color="black" />
+          </Pressable>
+        </View>
       </View>
       <View style={styles.btnContainer}>
         <Pressable

@@ -1,10 +1,9 @@
-import { Text, View, Pressable, ScrollView, RefreshControl, Dimensions, Alert } from 'react-native';
+import { Text, View, Pressable, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import { styles } from '../style/styles.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { Entypo } from '@expo/vector-icons';
-import { render } from 'react-dom';
 
 export default function HomeScreen({ navigation }) {
   //AsyncStorage.clear();
@@ -73,35 +72,36 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
         }
       >
-        {runList.length > 0 && runList.map((run, index) => (
-
-          <View key={index} style={styles.runView}>
-            <View>
-              <Text style={styles.runName}>{run.name}</Text>
-              <View style={styles.runDateTime}>
-                <Entypo name="calendar" size={16} color="black" />
-                <Text style={styles.runDateTimeText}>{run.date} at {run.startTime}</Text>
-                <Entypo name="location-pin" size={16} color="black" />
-                <Text style={styles.runDateTimeText}>{run.desc}</Text>
+        {runList.length > 0 && runList.map((run) => (
+          <Pressable key={run.runIndex} style={{width: '100%'}} onPress={() => navigation.navigate('Run', { runData: run })}>
+            <View style={styles.runView}>
+              <View>
+                <Text style={styles.runName}>{run.name}</Text>
+                <View style={styles.runDateTime}>
+                  <Entypo name="calendar" size={16} color="black" />
+                  <Text style={styles.runDateTimeText}>{run.date} at {run.startTime}</Text>
+                  <Entypo name="location-pin" size={16} color="black" />
+                  <Text style={styles.runDateTimeText}>{run.startGeo}</Text>
+                </View>
+              </View>
+              <View style={styles.runDataContainer}>
+                <View>
+                  <Text style={styles.runDataTitle}>Time:</Text>
+                  <Text style={styles.runData}>{run.duration}</Text>
+                </View>
+                <View style={styles.verticleLine}></View>
+                <View>
+                  <Text style={styles.runDataTitle}>Distance:</Text>
+                  <Text style={styles.runData}>{run.distance} km</Text>
+                </View>
+                <View style={styles.verticleLine}></View>
+                <View>
+                  <Text style={styles.runDataTitle}>Pace:</Text>
+                  <Text style={styles.runData}>{run.avgPace} /km</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.runDataContainer}>
-              <View>
-                <Text style={styles.runDataTitle}>Time:</Text>
-                <Text style={styles.runData}>{run.duration}</Text>
-              </View>
-              <View style={styles.verticleLine}></View>
-              <View>
-                <Text style={styles.runDataTitle}>Distance:</Text>
-                <Text style={styles.runData}>{run.distance} km</Text>
-              </View>
-              <View style={styles.verticleLine}></View>
-              <View>
-                <Text style={styles.runDataTitle}>Pace:</Text>
-                <Text style={styles.runData}>{run.avgPace} /km</Text>
-              </View>
-            </View>
-          </View>
+          </Pressable>
         ))}
         <View style={{ height: 130 }}></View>
       </ScrollView>

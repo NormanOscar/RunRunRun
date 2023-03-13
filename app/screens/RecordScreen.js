@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Text, View, Pressable, Dimensions, Button } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Text, View, Pressable, Dimensions } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { styles } from '../style/styles.js';
 import { useRoute } from "@react-navigation/native";
@@ -19,6 +19,16 @@ export default function RecordScreen({ navigation }) {
     longitudeDelta: 0.008
   });
 
+  const [startGeo, setStartGeo] = useState('');
+  useEffect(async () => {
+    (async () => {
+      let geocode = await Location.reverseGeocodeAsync({latitude: initialLocation.coords.latitude, longitude: initialLocation.coords.longitude})
+      let geoStr = geocode[0].city + ', ' + geocode[0].country;
+      setStartGeo(geoStr);
+    })();
+  }, []);
+  
+
   const [timer, isTargetAchieved] = useTimer();
   const [timerState, setTimerState] = useState('stopped');
   timer.addEventListener('started', () => {setTimerState('running')});
@@ -34,12 +44,14 @@ export default function RecordScreen({ navigation }) {
   }
 
   const [runListener, setRunListener] = useState();
-  const position = {
+  const [allPositions, setAllPositions] = useState([]);
+  const startPosition = {
     latitude: initialLocation.coords.latitude,
     longitude: initialLocation.coords.longitude
   };
+  
   const [totalDistance, setTotalDistance] = useState(0);
-
+  
   const enableWatchPosition = async () => {
     const watchOptions = {
       accuracy:Location.Accuracy.High,
@@ -50,20 +62,20 @@ export default function RecordScreen({ navigation }) {
       (
         watchOptions, 
         onPositionChange
-      )
-    );
+        )
+        );
+      }
+      
+      const onPositionChange = (locationCoords) => {
+        updateDistance(locationCoords.coords);
+        startPosition.latitude = locationCoords.coords.latitude;
+        startPosition.longitude = locationCoords.coords.longitude;
   }
-
-  const onPositionChange = (locationCoords) => {
-    updateDistance(locationCoords.coords);
-    position.latitude = locationCoords.coords.latitude;
-    position.longitude = locationCoords.coords.longitude;
-  }
-
+  
   const updateDistance = (currentPosition) => {
     const start = {
-      latitude: position.latitude,
-      longitude: position.longitude
+      latitude: startPosition.latitude,
+      longitude: startPosition.longitude
     }
     const end = {
       latitude: currentPosition.latitude,
@@ -74,14 +86,12 @@ export default function RecordScreen({ navigation }) {
   }
 
   const calculatePace = () => {
-    console.log(timer.getTotalTimeValues().seconds);
-    console.log(totalDistance);
     if (totalDistance == 0) {
       return '0:00';
     }
-   const pace = (timer.getTotalTimeValues().seconds)/totalDistance;
-
-   return Math.floor(pace/60) + ':' + Math.round(pace%60).toString().padStart(2, '0');
+    const pace = (timer.getTotalTimeValues().seconds)/totalDistance;
+    let paceStr = Math.floor(pace/60) + ':' + Math.round(pace%60).toString().padStart(2, '0');
+    return paceStr;
   }
   const disableWatchPositon = () => {
     runListener.remove();
@@ -195,7 +205,35 @@ export default function RecordScreen({ navigation }) {
                       }
                     ]}
                     onPress={() => {
-                      navigation.navigate('Save', { runData: {date: startDate, startTime: startTime, duration: timer.getTimeValues().toString(), distance: totalDistance.toFixed(2), avgPace: '5:50' } });
+                      navigation.navigate('Save', { runData: 
+                        {date: startDate, 
+                          startTime: startTime, 
+                          startGeo: startGeo, 
+                          duration: timer.getTimeValues().toString(), 
+                          distance: totalDistance.toFixed(2), 
+                          avgPace: calculatePace(), 
+                          positions: [
+                            { latitude: 56.857449, longitude: 14.830862 },
+                            { latitude: 56.857759, longitude: 14.830761 },
+                            { latitude: 56.857934,  longitude: 14.830604 },
+                            { latitude: 56.858116, longitude: 14.830000 },
+                            { latitude: 56.858302, longitude: 14.828987 },
+                            { latitude: 56.858636, longitude: 14.827459 },
+                            { latitude: 56.858993, longitude: 14.826100 },
+                            { latitude: 56.859244, longitude: 14.825125 },
+                            { latitude: 56.859523, longitude: 14.824559 },
+                            { latitude: 56.860028, longitude: 14.824245 },
+                            { latitude: 56.859815, longitude: 14.824087 },
+                            { latitude: 56.859261, longitude: 14.824232 },
+                            { latitude: 56.858402, longitude: 14.825119 },
+                            { latitude: 56.858281, longitude: 14.825628 },
+                            { latitude: 56.857944, longitude: 14.827081 },
+                            { latitude: 56.857824, longitude: 14.828195 },
+                            { latitude: 56.857752, longitude: 14.829094 },
+                            { latitude: 56.857618, longitude: 14.830327 },
+                            { latitude: 56.857545, longitude: 14.830616 },
+                            { latitude: 56.857528, longitude: 14.830654 },
+                          ]}});
                     }}>
                     <Text style={styles.btnText}>Finish</Text>
                   </Pressable>

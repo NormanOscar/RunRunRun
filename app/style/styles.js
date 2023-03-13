@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   input: {
     width: '90%',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 5,
     padding: 10,
     marginBottom: 20
   },
@@ -186,5 +186,12 @@ const styles = StyleSheet.create({
     width: 1,
     backgroundColor: '#909090',
   },
+  feelingBtns: {
+    paddingHorizontal: 40, 
+    paddingVertical: 10, 
+    borderRadius: 10, 
+    marginHorizontal: 10,
+    borderWidth: 2
+  }
 });
 export { styles }
