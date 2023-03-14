@@ -20,14 +20,13 @@ export default function RecordScreen({ navigation }) {
   });
 
   const [startGeo, setStartGeo] = useState('');
-  useEffect(async () => {
+  useEffect(() => {
     (async () => {
       let geocode = await Location.reverseGeocodeAsync({latitude: initialLocation.coords.latitude, longitude: initialLocation.coords.longitude})
       let geoStr = geocode[0].city + ', ' + geocode[0].country;
       setStartGeo(geoStr);
     })();
   }, []);
-  
 
   const [timer, isTargetAchieved] = useTimer();
   const [timerState, setTimerState] = useState('stopped');
@@ -53,6 +52,8 @@ export default function RecordScreen({ navigation }) {
   const [totalDistance, setTotalDistance] = useState(0);
   
   const enableWatchPosition = async () => {
+    allPositions.push(startPosition);
+    setTotalDistance(0);
     const watchOptions = {
       accuracy:Location.Accuracy.High,
       timeInterval: 1000,
@@ -62,40 +63,42 @@ export default function RecordScreen({ navigation }) {
       (
         watchOptions, 
         onPositionChange
-        )
-        );
-      }
+      )
+    );
+  };
       
-      const onPositionChange = (locationCoords) => {
-        updateDistance(locationCoords.coords);
-        startPosition.latitude = locationCoords.coords.latitude;
-        startPosition.longitude = locationCoords.coords.longitude;
-  }
+  const onPositionChange = (locationCoords) => {
+    allPositions.push({latitude: locationCoords.coords.latitude, longitude: locationCoords.coords.longitude});
+    updateDistance(locationCoords.coords);
+    startPosition.latitude = locationCoords.coords.latitude;
+    startPosition.longitude = locationCoords.coords.longitude;
+  };
   
   const updateDistance = (currentPosition) => {
     const start = {
       latitude: startPosition.latitude,
       longitude: startPosition.longitude
-    }
+    };
     const end = {
       latitude: currentPosition.latitude,
       longitude: currentPosition.longitude
-    }
+    };
     let latestDistance = haversine(start, end, {unit: 'km'});
     setTotalDistance(prev => prev + latestDistance);
-  }
+  };
 
   const calculatePace = () => {
     if (totalDistance == 0) {
       return '0:00';
-    }
+    };
     const pace = (timer.getTotalTimeValues().seconds)/totalDistance;
     let paceStr = Math.floor(pace/60) + ':' + Math.round(pace%60).toString().padStart(2, '0');
     return paceStr;
-  }
+  };
   const disableWatchPositon = () => {
     runListener.remove();
-  }
+    allPositions.splice[allPositions.length-1];
+  };
   return (
     <View style={[styles.container, {backgroundColor: 'white'}]}>
       {timerState == 'stopped' && (
@@ -212,28 +215,7 @@ export default function RecordScreen({ navigation }) {
                           duration: timer.getTimeValues().toString(), 
                           distance: totalDistance.toFixed(2), 
                           avgPace: calculatePace(), 
-                          positions: [
-                            { latitude: 56.857449, longitude: 14.830862 },
-                            { latitude: 56.857759, longitude: 14.830761 },
-                            { latitude: 56.857934, longitude: 14.830604 },
-                            { latitude: 56.858116, longitude: 14.830000 },
-                            { latitude: 56.858302, longitude: 14.828987 },
-                            { latitude: 56.858636, longitude: 14.827459 },
-                            { latitude: 56.858993, longitude: 14.826100 },
-                            { latitude: 56.859244, longitude: 14.825125 },
-                            { latitude: 56.859523, longitude: 14.824559 },
-                            { latitude: 56.860028, longitude: 14.824245 },
-                            { latitude: 56.859815, longitude: 14.824087 },
-                            { latitude: 56.859261, longitude: 14.824232 },
-                            { latitude: 56.858402, longitude: 14.825119 },
-                            { latitude: 56.858281, longitude: 14.825628 },
-                            { latitude: 56.857944, longitude: 14.827081 },
-                            { latitude: 56.857824, longitude: 14.828195 },
-                            { latitude: 56.857752, longitude: 14.829094 },
-                            { latitude: 56.857618, longitude: 14.830327 },
-                            { latitude: 56.857545, longitude: 14.830616 },
-                            { latitude: 56.857528, longitude: 14.830654 },
-                          ]
+                          positions: allPositions
                         }});
                     }}>
                     <Text style={styles.btnText}>Finish</Text>

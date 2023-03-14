@@ -15,7 +15,6 @@ export default function SaveScreen({ navigation }) {
 
   const route = useRoute();
   const runData = route.params?.runData;
-  
   useEffect(() => {
     const startHour = runData.startTime.split(':')[0];
     if (startHour >= 0 && startHour < 6) {
@@ -47,7 +46,7 @@ export default function SaveScreen({ navigation }) {
     } catch (error) {
       // Error retrieving data
     }
-    runData.runIndex = runIndex;
+    runData.runIndex = Date.now();
     try {
       await AsyncStorage.setItem('savedData', JSON.stringify(savedData));
     } catch (error) {

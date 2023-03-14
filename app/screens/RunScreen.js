@@ -10,12 +10,20 @@ export default function RunScreen({ navigation }) {
 
   const route = useRoute();
   const runData = route.params?.runData;
-
+  console.log(runData.positions);
+  
   const [modalVisible, setModalVisible] = useState(false);
-
+  
+  const [allRuns, setAllRuns] = useState([]);
+  
   const _map = useRef();
   useEffect(() => {
-    console.log(_map);
+    (() => {
+    
+      runData.positions.map(position => {allRuns.push(position)});
+      allRuns.pop();
+      console.log(allRuns);
+
       _map.current.fitToCoordinates(runData.positions, {
         edgePadding: {
           top: 80,
@@ -25,6 +33,7 @@ export default function RunScreen({ navigation }) {
         },
         animated: true
       });
+    })();
   }, []);
 
   const deleteRun = async () => {
@@ -33,9 +42,8 @@ export default function RunScreen({ navigation }) {
     try {
       savedData = JSON.parse(await AsyncStorage.getItem('savedData'));
     } catch (error) {}
-    console.log(savedData);
-    savedData.splice(runData.runIndex, 1);
-    console.log(savedData);
+    const currentRun = savedData.filter(run => run.runIndex == runData.runIndex );
+    savedData.splice(currentRun.runIndex, 1);
     try {
       await AsyncStorage.setItem('savedData', JSON.stringify(savedData));
     } catch (error) {}

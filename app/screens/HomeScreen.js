@@ -8,11 +8,9 @@ import { Entypo } from '@expo/vector-icons';
 export default function HomeScreen({ navigation }) {
   //AsyncStorage.clear();
 
-  const [, updateState] = useReducer(x => x + 1, 0);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    updateState();
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
