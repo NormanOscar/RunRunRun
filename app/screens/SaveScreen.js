@@ -197,8 +197,8 @@ export default function SaveScreen({ navigation }) {
               backgroundColor: "rgb(59, 154, 226)",
             },
           ]}
-          onPress={() => {
-            saveData();
+          onPress={async () => {
+            await saveData();
             navigation.navigate("Home");
           }}
         >

@@ -75,8 +75,8 @@ export default function RunScreen({ navigation }) {
               </Pressable>
               <Pressable
                 style={[styles.modalBtns, styles.deleteBtn]}
-                onPress={() => {
-                  deleteRun();
+                onPress={async () => {
+                  await deleteRun();
                   setModalVisible(!modalVisible);
                   navigation.navigate("Home");
                 }}

@@ -37,7 +37,8 @@ export default function HomeScreen({ navigation }) {
         Alert("Permission to access location was denied");
       }
     })();
-    (async () => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      // The screen is focused, get the runs
       try {
         setRunList(
           JSON.parse(await AsyncStorage.getItem("savedData")).reverse() || []
@@ -45,8 +46,9 @@ export default function HomeScreen({ navigation }) {
       } catch (error) {
         errorMsg = "Could not load runs";
       }
-    })();
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, runList]);
 
   return (
     <View style={styles.container}>
