@@ -108,7 +108,7 @@ export default function RecordScreen({ navigation }) {
   };
   const disableWatchPositon = () => {
     runListener.remove();
-    allPositions.splice[allPositions.length - 1];
+    allPositions.pop();
   };
   return (
     <View style={[styles.container, { backgroundColor: "white" }]}>

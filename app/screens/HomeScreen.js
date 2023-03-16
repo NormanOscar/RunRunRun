@@ -3,10 +3,9 @@ import {
   View,
   Pressable,
   ScrollView,
-  RefreshControl,
   Alert,
 } from "react-native";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { styles } from "../style/styles.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
@@ -14,14 +13,6 @@ import { Entypo } from "@expo/vector-icons";
 
 export default function HomeScreen({ navigation }) {
   //AsyncStorage.clear();
-
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  }, []);
 
   const [location, setLocation] = useState(null);
   const [runList, setRunList] = useState([]);
@@ -72,9 +63,6 @@ export default function HomeScreen({ navigation }) {
       )}
       <ScrollView
         contentContainerStyle={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
       >
         {runList.length > 0 &&
           runList.map((run) => (

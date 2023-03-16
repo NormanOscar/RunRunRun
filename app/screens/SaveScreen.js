@@ -8,30 +8,31 @@ import { Entypo } from "@expo/vector-icons";
 export default function SaveScreen({ navigation }) {
   const [modalVisible, setModalVisible] = React.useState(false);
 
-  const [runName, setName] = React.useState("");
+  const route = useRoute();
+  const runData = route.params?.runData;
+  const setDefaultName = () => {
+    const startHour = runData.startTime.split(":")[0];
+    if (startHour >= 0 && startHour < 6) {
+      return "Night run";
+    }
+    if (startHour >= 6 && startHour < 11) {
+      return "Morning run";
+    }
+    if (startHour >= 11 && startHour < 13) {
+      return "Lunch run";
+    }
+    if (startHour >= 13 && startHour < 18) {
+      return "Afternoon run";
+    }
+    if (startHour >= 18 && startHour < 24) {
+      return "Evening run";
+    }
+  };
+
+  const [runName, setRunName] = React.useState(setDefaultName());
   const [runDesc, setDesc] = React.useState("");
   const [runFeeling, setRunFeeling] = React.useState("good");
 
-  const route = useRoute();
-  const runData = route.params?.runData;
-  useEffect(() => {
-    const startHour = runData.startTime.split(":")[0];
-    if (startHour >= 0 && startHour < 6) {
-      setName("Night run");
-    }
-    if (startHour >= 6 && startHour < 11) {
-      setName("Morning run");
-    }
-    if (startHour >= 11 && startHour < 13) {
-      setName("Lunch run");
-    }
-    if (startHour >= 13 && startHour < 18) {
-      setName("Afternoon run");
-    }
-    if (startHour >= 18 && startHour < 24) {
-      setName("Evening run");
-    }
-  });
   const saveData = async () => {
     let savedData = [];
     let runIndex;
@@ -133,14 +134,14 @@ export default function SaveScreen({ navigation }) {
           </View>
         </View>
         <TextInput
-          style={[styles.input, { height: 40 }]}
+          style={[styles.input, { height: 60 }]}
           placeholder="Name"
-          onChangeText={(text) => setName(text)}
+          onChangeText={(text) => setRunName(text)}
           value={runName}
         />
         <TextInput
           multiline={true}
-          style={[styles.input, { height: 80 }]}
+          style={[styles.input, { height: 100 }]}
           placeholder="Description"
           onChangeText={(text) => setDesc(text)}
           value={runDesc}

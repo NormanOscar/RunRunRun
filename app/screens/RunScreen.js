@@ -9,27 +9,18 @@ import { useState, useEffect, useRef } from "react";
 export default function RunScreen({ navigation }) {
   const route = useRoute();
   const runData = route.params?.runData;
-  console.log(runData.positions);
 
   const [modalVisible, setModalVisible] = useState(false);
-
-  const [allRuns, setAllRuns] = useState([]);
 
   const _map = useRef();
   useEffect(() => {
     (() => {
-      runData.positions.map((position) => {
-        allRuns.push(position);
-      });
-      allRuns.pop();
-      console.log(allRuns);
-
       _map.current.fitToCoordinates(runData.positions, {
         edgePadding: {
-          top: 80,
-          right: 80,
-          bottom: 80,
-          left: 80,
+          top: 120,
+          right: 120,
+          bottom: 120,
+          left: 120,
         },
         animated: true,
       });
@@ -148,7 +139,7 @@ export default function RunScreen({ navigation }) {
             />
           )}
         </View>
-        <View style={{ width: "100%", marginTop: 10 }}>
+        <View style={{ width: "100%" }}>
           <View style={{ alignItems: "center" }}>
             <View
               style={{
@@ -194,7 +185,7 @@ export default function RunScreen({ navigation }) {
               <MapView
                 style={{
                   width: 420,
-                  height: 450,
+                  height: 440,
                 }}
                 ref={_map}
                 provider={PROVIDER_GOOGLE}
