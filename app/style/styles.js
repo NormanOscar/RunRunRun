@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   map: {
+    paddingTop: 10,
     flex: 1
   },
   recordFields: {
@@ -56,7 +57,6 @@ const styles = StyleSheet.create({
   },
   backBtnContainer: {
     paddingTop: 50,
-    paddingBottom: 10,
     width: 80,
   },
   backBtnText: {

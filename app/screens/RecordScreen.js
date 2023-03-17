@@ -1,5 +1,10 @@
+import { 
+  Text, 
+  View, 
+  Pressable, 
+  Dimensions 
+} from "react-native";
 import { useEffect, useState } from "react";
-import { Text, View, Pressable, Dimensions } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { styles } from "../style/styles.js";
 import { useRoute } from "@react-navigation/native";
@@ -8,6 +13,13 @@ import { format } from "date-fns";
 import * as Location from "expo-location";
 import haversine from "haversine";
 
+/**
+ * Component for RecordScreen
+ * 
+ * @param {navigation} Navigation object
+ * 
+ * @return {Components} View of components
+ */
 export default function RecordScreen({ navigation }) {
   const initialLocation = useRoute().params?.location;
 
@@ -19,7 +31,18 @@ export default function RecordScreen({ navigation }) {
   });
 
   const [startGeo, setStartGeo] = useState("");
+
+  /**
+   * Runs when component is mounted
+   *
+   * @return {undefined}
+   */
   useEffect(() => {
+    /**
+     * Turns coordinates into object with locartion information
+     * 
+     * @return {undefined}
+     */
     (async () => {
       let geocode = await Location.reverseGeocodeAsync({
         latitude: initialLocation.coords.latitude,
@@ -42,6 +65,11 @@ export default function RecordScreen({ navigation }) {
   const [startDate, setStartDate] = useState();
   const [startTime, setStartTime] = useState();
 
+  /**
+   * Sets date and time for run
+   * 
+   * @return {undefined}
+   */
   const setDate = () => {
     const date = new Date();
     setStartDate(format(date, "dd MMMM yyyy"));
@@ -57,6 +85,11 @@ export default function RecordScreen({ navigation }) {
 
   const [totalDistance, setTotalDistance] = useState(0);
 
+  /**
+   * Listens to position change for user
+   * 
+   * @return {undefined}
+   */
   const enableWatchPosition = async () => {
     allPositions.push(startPosition);
     setTotalDistance(0);
@@ -70,6 +103,13 @@ export default function RecordScreen({ navigation }) {
     );
   };
 
+  /**
+   * Changes user position on position change
+   * 
+   * @param {locaitonCoords} Object with current position information 
+   * 
+   * @return {undefined}
+   */
   const onPositionChange = (locationCoords) => {
     allPositions.push({
       latitude: locationCoords.coords.latitude,
@@ -80,6 +120,13 @@ export default function RecordScreen({ navigation }) {
     startPosition.longitude = locationCoords.coords.longitude;
   };
 
+  /**
+   * Calculate and updates distance of run
+   * 
+   * @param {currentPosition} Object with lat and lon of current position 
+   * 
+   * @return {undefined} 
+   */
   const updateDistance = (currentPosition) => {
     const start = {
       latitude: startPosition.latitude,
@@ -93,23 +140,38 @@ export default function RecordScreen({ navigation }) {
     setTotalDistance((prev) => prev + latestDistance);
   };
 
+  /**
+   * Calculates avrage pace of run
+   * 
+   * @return {paceStr} String with current pace
+   */
   const calculatePace = () => {
     if (totalDistance == 0) {
       return "0:00";
     }
     const pace = timer.getTotalTimeValues().seconds / totalDistance;
     let paceStr =
-      Math.floor(pace / 60) +
-      ":" +
+      Math.floor(pace / 60) 
+      + ":" +
       Math.round(pace % 60)
         .toString()
         .padStart(2, "0");
     return paceStr;
   };
+
+  /**
+   * Stops watching position changes of user
+   * 
+   * @return {undefined}
+   */
   const disableWatchPositon = () => {
     runListener.remove();
     allPositions.pop();
   };
+
+  /**
+   * Reders layout of screen
+   */
   return (
     <View style={[styles.container, { backgroundColor: "white" }]}>
       {timerState == "stopped" && (

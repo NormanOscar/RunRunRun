@@ -11,6 +11,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import { Entypo } from "@expo/vector-icons";
 
+/**
+ * Component for HomeScreen
+ * 
+ * @param {navigation} Navigation object
+ * 
+ * @return {Components} View of components
+ */
 export default function HomeScreen({ navigation }) {
   //AsyncStorage.clear();
 
@@ -18,7 +25,17 @@ export default function HomeScreen({ navigation }) {
   const [runList, setRunList] = useState([]);
   let errorMsg;
 
+  /**
+   * Runs when component is mounted
+   *
+   * @return {undefined}
+   */
   useEffect(() => {
+    /**
+     * Asks and gets users location
+     * 
+     * @return {undefined}
+     */
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
@@ -28,6 +45,12 @@ export default function HomeScreen({ navigation }) {
         Alert("Permission to access location was denied");
       }
     })();
+
+    /**
+     * Listens if screen is in focus
+     * 
+     * @return {undefined}
+     */
     const unsubscribe = navigation.addListener("focus", async () => {
       // The screen is focused, get the runs
       try {
@@ -41,6 +64,9 @@ export default function HomeScreen({ navigation }) {
     return unsubscribe;
   }, [navigation, runList]);
 
+  /**
+   * Reders layout of screen
+   */
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>

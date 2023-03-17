@@ -1,15 +1,34 @@
+import { 
+  Text, 
+  View, 
+  Pressable,
+  TextInput,
+   Modal 
+} from "react-native";
 import React, { useEffect } from "react";
-import { Text, View, Pressable, TextInput, Modal } from "react-native";
 import { styles } from "../style/styles.js";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Entypo } from "@expo/vector-icons";
 
+/**
+ * Component for SaveScreen
+ * 
+ * @param {navigation} Navigation object
+ * 
+ * @return {Components} View of components
+ */
 export default function SaveScreen({ navigation }) {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   const route = useRoute();
   const runData = route.params?.runData;
+
+  /**
+   * Sets default name of run depending on time of day
+   *
+   *  @return {string} String for name of run
+   */
   const setDefaultName = () => {
     const startHour = runData.startTime.split(":")[0];
     if (startHour >= 0 && startHour < 6) {
@@ -33,6 +52,11 @@ export default function SaveScreen({ navigation }) {
   const [runDesc, setDesc] = React.useState("");
   const [runFeeling, setRunFeeling] = React.useState("good");
 
+  /**
+   * Saves rundata into async storage
+   * 
+   * @return {undefined}
+   */
   const saveData = async () => {
     let savedData = [];
     let runIndex;
@@ -54,6 +78,9 @@ export default function SaveScreen({ navigation }) {
     }
   };
 
+  /**
+   * Reders layout of screen
+   */
   return (
     <View style={[styles.container, { backgroundColor: "white" }]}>
       <Modal
@@ -102,7 +129,7 @@ export default function SaveScreen({ navigation }) {
           flex: 0.9,
         }}
       >
-        <Text style={{ fontSize: 30, paddingBottom: 20 }}>Save</Text>
+        <Text style={{ fontSize: 30, paddingBottom: 10 }}>Save</Text>
         <View>
           <View>
             <View
